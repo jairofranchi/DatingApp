@@ -18,7 +18,8 @@ namespace Dating.API.Controllers
         {
             this._context = context;
         }
-
+        
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetValues()
         {
