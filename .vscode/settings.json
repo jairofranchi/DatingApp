@@ -6,5 +6,9 @@
     "typescript.format.placeOpenBraceOnNewLineForControlBlocks": true,
     "typescript.autoClosingTags": false,
     "javascript.autoClosingTags": false,
-    "prettier.jsxBracketSameLine": true
+    "prettier.jsxBracketSameLine": true,
+    "javascript.preferences.quoteStyle": "single",
+    "typescript.preferences.quoteStyle": "single",
+    "prettier.jsxSingleQuote": true,
+    "prettier.singleQuote": true,
 }
