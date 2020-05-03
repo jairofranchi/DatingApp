@@ -1,14 +1,18 @@
-using System.Net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using Dating.API.Data;
 using DatingApp.API.Data;
+using DatingApp.API.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,9 +21,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Http;
-using DatingApp.API.Helpers;
 
 namespace Dating.API
 {
@@ -37,9 +38,14 @@ namespace Dating.API
         {
             services.AddDbContext<DataContext>
                 (x => x.UseSqlite (Configuration.GetConnectionString ("DefaultConnection")));
-            services.AddControllers ();
+            services.AddControllers ().AddNewtonsoftJson (opt =>
+            {
+                opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+            });
             services.AddCors ();
+            services.AddAutoMapper(typeof(DatingRepository).Assembly);
             services.AddScoped<IAuthRepository, AuthRepository> ();
+            services.AddScoped<IDatingRepository, DatingRepository> ();
             services.AddAuthentication (JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer (options => options.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -58,17 +64,19 @@ namespace Dating.API
             {
                 app.UseDeveloperExceptionPage ();
             }
-            else 
+            else
             {
-                app.UseExceptionHandler(builder => {
-                    builder.Run(async context => {
+                app.UseExceptionHandler (builder =>
+                {
+                    builder.Run (async context =>
+                    {
                         context.Response.StatusCode = (int) HttpStatusCode.InternalServerError;
 
-                        var error = context.Features.Get<IExceptionHandlerFeature>();
-                        if(error != null)
+                        var error = context.Features.Get<IExceptionHandlerFeature> ();
+                        if (error != null)
                         {
-                            context.Response.AddApplicationError(error.Error.Message);
-                            await context.Response.WriteAsync(error.Error.Message);
+                            context.Response.AddApplicationError (error.Error.Message);
+                            await context.Response.WriteAsync (error.Error.Message);
                         }
                     });
                 });
@@ -81,7 +89,7 @@ namespace Dating.API
             app.UseCors (builder => builder.AllowAnyOrigin ().AllowAnyMethod ().AllowAnyHeader ());
 
             app.UseAuthentication ();
-    
+
             app.UseAuthorization ();
 
             app.UseEndpoints (endpoints =>
