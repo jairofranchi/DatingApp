@@ -1,1 +1,3 @@
 DatingApp-SPA/.prettierrc
+DatingApp.API/DatingApp.db-wal
+DatingApp.API/DatingApp.db-shm
