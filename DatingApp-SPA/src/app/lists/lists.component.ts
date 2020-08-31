@@ -11,8 +11,7 @@ import { AlertifyService } from '../_services/alertify.service';
   templateUrl: './lists.component.html',
   styleUrls: ['./lists.component.css'],
 })
-export class ListsComponent implements OnInit
-{
+export class ListsComponent implements OnInit {
   users: User[];
   pagination: Pagination;
   likesParam: string;
@@ -21,11 +20,11 @@ export class ListsComponent implements OnInit
     private authService: AuthService,
     private userService: UserService,
     private alertify: AlertifyService,
-    private route: ActivatedRoute) { }
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit() {
-    this.route.data.subscribe(data =>
-    {
+    this.route.data.subscribe((data) => {
       this.users = data['users'].result;
       this.pagination = data['users'].pagination;
     });
@@ -33,14 +32,19 @@ export class ListsComponent implements OnInit
   }
 
   loadUsers() {
-    this.userService.getUsers(this.pagination.currentPage, this.pagination.itemsPerPage, null, this.userParams)
-      .subscribe((res: PaginatedResult<User[]>) =>
-      {
-        this.users = res.result;
-        this.pagination = res.pagination;
-      },
-        (error) =>
-        {
+    this.userService
+      .getUsers(
+        this.pagination.currentPage,
+        this.pagination.itemsPerPage,
+        null,
+        this.likesParam
+      )
+      .subscribe(
+        (res: PaginatedResult<User[]>) => {
+          this.users = res.result;
+          this.pagination = res.pagination;
+        },
+        (error) => {
           this.alertify.error(error);
         }
       );
